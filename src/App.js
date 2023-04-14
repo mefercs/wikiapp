@@ -1,23 +1,36 @@
-import logo from './logo.svg';
-import './App.css';
+import { useState } from "react";
+import "./App.css";
+import Card from "./components/Card";
 
 function App() {
+  const [text, setText] = useState("");
+  const [data, setData] = useState("");
+
+  const fetchData = async () => {
+    fetch(
+      `${process.env.REACT_APP_WIKI_API}${process.env.REACT_APP_ENDPOINTS}${text}`
+    )
+      .then((data) => data.json())
+      .then((res) => setData(res));
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
+    <div className="main">
+      <input
+        onChange={(e) => {
+          setText(e.target.value);
+        }}
+        placeholder={text}
+        type="text"
+        className="text"
+      />
+      <p>{text}</p>
+      <button onClick={fetchData}>Search</button>
+      <p>
+        {data === ""
+          ? "Empty"
+          : Object.values(data["query"]["pages"]).map( e=> <Card pageid={e['pageid']} text={e['title']}/>)}
         </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
     </div>
   );
 }
